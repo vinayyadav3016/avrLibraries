@@ -110,23 +110,22 @@ class Serial0
     }
 };
 
-
-Serial0 SERIAL0_NAME(BAUD_RATE0,RX0_BUFF,TX0_BUFF);
+Serial0 SERIAL_NAME(BAUD_RATE,RX_BUFF,TX_BUFF);
 
 ISR(USART_UDRE_vect)
 {
-  SERIAL0_NAME.doUDRISR();
+  SERIAL_NAME.doUDRISR();
 }
 
 ISR(USART_RX_vect)
 {
   const uint8_t data = UDR0;
-  SERIAL0_NAME.doRXISR(data);
+  SERIAL_NAME.doRXISR(data);
 }
 
 ISR(USART_TX_vect)
 {
-  SERIAL0_NAME.doTXISR();
+  SERIAL_NAME.doTXISR();
 }
 
 #endif

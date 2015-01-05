@@ -6,7 +6,7 @@ PROJ = avr-test2
 BUILD = "Release" 
 
 ## Give MCU name
-MCU = atmega16
+MCU = atmega32
 
 ## F_CPU
 F_CPU = 16000000

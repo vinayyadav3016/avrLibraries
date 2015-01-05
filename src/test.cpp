@@ -2,23 +2,12 @@
 #include "uart_lib.hpp"
 #include <avr/delay.h>
 #include <util/delay.h>
-Serial serial_port(9600,32,32);
 
-ISR(USART_UDRE_vect)
-{
-  serial_port.doUDRISR();
-}
-
-ISR(USART_RXC_vect)
-{
-  const uint8_t data = UDR;
-  serial_port.doRXISR(data);
-}
-
-ISR(USART_TXC_vect)
-{
-  serial_port.doTXISR();
-}
+#define SERIAL_NAME serial_port
+#define BAUD_RATE 9600
+#define RX_BUFF 32
+#define TX_BUFF 32
+#include "serial.hpp"
 
 int main()
 {
@@ -31,7 +20,6 @@ int main()
   {
     _delay_ms(100);
      serial_port.sendString("Hi this is Vinay\n");
-     //serial_port.sendByte('A');
      PORTB=~PORTB;
   }
   return 0;

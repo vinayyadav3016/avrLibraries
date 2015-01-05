@@ -108,4 +108,22 @@ class Serial
     }
 };
 
+Serial SERIAL_NAME(BAUD_RATE,RX_BUFF,TX_BUFF);
+
+ISR(USART_UDRE_vect)
+{
+  SERIAL_NAME.doUDRISR();
+}
+
+ISR(USART_RXC_vect)
+{
+  const uint8_t data = UDR;
+  SERIAL_NAME.doRXISR(data);
+}
+
+ISR(USART_TXC_vect)
+{
+  SERIAL_NAME.doTXISR();
+}
+
 #endif
