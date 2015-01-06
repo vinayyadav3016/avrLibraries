@@ -9,12 +9,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "serial_base.hpp"
 
-class Serial0
+class Serial0 : public SerialBase
 {
   protected:
-    RingBuffer _reciever;
-    RingBuffer _transmitter;
     inline void initUSART(const int baudrate) const
     {
       uint16_t  ubbr_value = (F_CPU/(baudrate*16UL))-1;
@@ -22,7 +21,7 @@ class Serial0
       UBRR0H = ubbr_value>>8;
       UCSR0C =(1<<UCSZ01)|(1<<UCSZ00);
     }
-    inline void startUSART()
+    inline void startUSART() const
     {
       UCSR0B|=(1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0)|(1<<TXCIE0)|(1<<UDRIE0);
     }
@@ -33,56 +32,12 @@ class Serial0
     inline void stopTransmission()
     {
       UCSR0B&=~(1<<UDRIE0);
-    } 
-    inline uint8_t sendChunk(const uint8_t* data,const uint8_t length)
-    {
-      if(length<=_transmitter.getWriteBuffLength())
-      {
-        for(uint8_t i=0;i<length;i++)
-        {
-          _transmitter.writeByte(data[i]);
-        }
-        startTransmission();
-        return 0;
-      }
-      else
-      {
-        return RingBuffer::BUFFER_FULL;
-      }
     }
   public:
-    Serial0(int baudrate,uint8_t rec_size,uint8_t trans_size): _reciever(rec_size), _transmitter(trans_size)
+    Serial0(int baudrate,uint8_t rec_size,uint8_t trans_size):SerialBase(rec_size,trans_size)
     {
       initUSART(baudrate);
       startUSART();
-    }
-    inline uint8_t sendln()
-    {
-      return sendByte('\n');
-    }
-    inline uint8_t sendByte(const uint8_t& data)
-    {
-      return sendChunk(&data,1);
-    }
-    inline uint8_t sendBuffer(const uint8_t* data,const uint8_t length)
-    {
-      return sendChunk(data,length);
-    }
-    inline uint8_t sendString(const char* data)
-    {
-      return sendChunk(reinterpret_cast<const uint8_t * >(data),strlen(data));
-    }
-    inline uint8_t sendInt(const int& data)
-    {
-      char str[10];
-      uint8_t length = sprintf(str,"%d",data);
-      return sendChunk(reinterpret_cast<const uint8_t *>(str),length);
-    }
-    inline uint8_t sendFloat(const float& data,const uint8_t decimal=2)
-    {
-      char str[10];
-      uint8_t length = sprintf(str,"%.*f",decimal,data);
-      return sendChunk(reinterpret_cast<const uint8_t *>(str),length);
     }
     inline void doUDRISR()
     {
@@ -124,6 +79,22 @@ ISR(USART_RX_vect)
 }
 
 ISR(USART_TX_vect)
+{
+  SERIAL_NAME.doTXISR();
+}
+
+ISR(USART0_UDRE_vect)
+{
+  SERIAL_NAME.doUDRISR();
+}
+
+ISR(USART0_RX_vect)
+{
+  const uint8_t data = UDR0;
+  SERIAL_NAME.doRXISR(data);
+}
+
+ISR(USART0_TX_vect)
 {
   SERIAL_NAME.doTXISR();
 }

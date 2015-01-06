@@ -2,6 +2,17 @@
 #define CPLUSPLUS_USE_HPP
 #include <stdlib.h>
 #include <inttypes.h>
+#include <avr/io.h>
+#include <avr/signal.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+///
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 ///
 void * operator new(size_t size)
 {

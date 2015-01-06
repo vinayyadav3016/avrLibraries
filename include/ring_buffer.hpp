@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 class RingBuffer
 {
@@ -15,8 +16,8 @@ class RingBuffer
     uint8_t _size;
   public:
     enum{
-      NO_DATA_TO_READ=0x01,
-      BUFFER_FULL=0x02
+      NO_DATA_TO_READ=0x00,
+      BUFFER_FULL=0x00
     } ERRORS;
     RingBuffer(const uint8_t size):_size(size)
     {
@@ -39,11 +40,11 @@ class RingBuffer
     }
     inline uint8_t getWriteBuffLength()
     {
-      return (_size - _insert + _pop)%(_size+1);
+      return (_size - _insert + _pop-1)%(_size);
     }
     inline uint8_t getReadBuffLength()
     {
-      return ((int8_t)(_insert - _pop))%(_size+1);
+      return ((int8_t)(_size + _insert - _pop))%(_size);
     }
 };
 #endif
