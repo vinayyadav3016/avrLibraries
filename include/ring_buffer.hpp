@@ -15,7 +15,7 @@ class RingBuffer
     uint8_t _pop;
     uint8_t _size;
   public:
-    enum{
+     static enum{
       NO_DATA_TO_READ=0x00,
       BUFFER_FULL=0x00
     } ERRORS;
@@ -28,23 +28,38 @@ class RingBuffer
     {
       delete[] _buffer;
     }
-    inline void writeByte(const uint8_t& data)
+    inline void writeByte(const uint8_t& data) __attribute__((always_inline))
     {
       _buffer[_insert] = data;
-      _insert=(_insert+1)%_size;
+      _insert++;
+      if(_insert<_size)
+      {
+      }
+      else
+      {
+        _insert=(_insert)%_size;
+      }
     }
-    inline void readByte(uint8_t& data)
+    inline void readByte(uint8_t& data) __attribute__((always_inline))
     {
       data = _buffer[_pop];
-      _pop = (_pop+1)%_size;
+      _pop++;
+      if(_pop<_size)
+      {
+
+      }
+      else
+      {
+        _pop = (_pop)%_size;
+      }
     }
-    inline uint8_t getWriteBuffLength()
+    inline uint8_t getWriteBuffLength() __attribute__((always_inline))
     {
-      return (_size - _insert + _pop-1)%(_size);
+      return (_size - _insert + _pop-1);
     }
-    inline uint8_t getReadBuffLength()
+    inline uint8_t getReadBuffLength() __attribute__((always_inline))
     {
-      return ((int8_t)(_size + _insert - _pop))%(_size);
+      return ((int8_t)(_size + _insert - _pop));
     }
 };
 #endif

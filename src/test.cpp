@@ -3,12 +3,21 @@
 #include <avr/delay.h>
 #include <util/delay.h>
 
-#define SERIAL_NAME serial_port
-#define BAUD_RATE 9600
-#define RX_BUFF 32
-#define TX_BUFF 32
-#include "serial.hpp"
-
+////////////////////////////////////////
+/////  UART defination start         ///
+// type identifier                   ///
+#define SERIAL_NAME serial_port      ///
+#define BAUD_RATE 9600               ///
+#define RX_BUFF 5                    ///
+#define TX_BUFF 5                    ///
+#include "serial.hpp"                ///
+#undef SERIAL_NAME                   ///
+#undef BAUD_RATE                     ///
+#undef RX_BUFF                       ///
+#undef TX_BUFF                       ///
+////// UART defination ends here     ///
+////////////////////////////////////////
+#define PROMPT "Arduino:"
 int main()
 {
   DDRB=0xff;
@@ -16,10 +25,11 @@ int main()
   cli();
   sei();
   PORTB=~PORTB;
+  //const char* prompt="Arduino:";
   while(1)
   {
     _delay_ms(100);
-     serial_port.sendString("Hi this is Vinay\n");
+     serial_port.sendString(PROMPT);
      PORTB=~PORTB;
   }
   return 0;

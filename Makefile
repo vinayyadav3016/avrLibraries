@@ -6,7 +6,7 @@ PROJ = avr-test2
 BUILD = "Release" 
 
 ## Give MCU name
-MCU = atmega32
+MCU = atmega8
 
 ## F_CPU
 F_CPU = 16000000
@@ -45,6 +45,10 @@ CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -ffun
 CFLAGS += -Wall -Wstrict-prototypes -pedantic
 #CFLAGS += -Werror -pedantic-errors ## uncomment if want to remove all errors
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
+## inline functions
+CFLAGS += -finline-limit=3 
+CFLAGS += -fno-tree-scev-cprop -fwhole-program -fno-tree-scev-cprop
+CFLAGS += -ffunction-sections -fdata-sections
 
 ## library options
 PRINTF_LIB = -Wl,-u,vfprintf -lprintf_min -lprintf_flt

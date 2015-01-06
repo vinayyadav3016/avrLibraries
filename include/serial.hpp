@@ -14,22 +14,22 @@
 class Serial : public SerialBase
 {
   protected:
-    inline void initUSART(const int baudrate) const
+    inline void initUSART(const int baudrate) const __attribute__((always_inline))
     {
       uint16_t  ubbr_value = (F_CPU/(baudrate*16UL))-1;
       UBRRL = ubbr_value;
       UBRRH = ubbr_value>>8;
       UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
     }
-    inline void startUSART() const
+    inline void startUSART() const __attribute__((always_inline))
     {
       UCSRB|=(1<<RXEN)|(1<<TXEN)|(1<<RXCIE)|(1<<TXCIE);
     }
-    inline void startTransmission() const
+    inline void startTransmission() const __attribute__((always_inline))
     {
       UCSRB|=(1<<UDRIE);
     }
-    inline void stopTransmission()
+    inline void stopTransmission() __attribute__((always_inline))
     {
       UCSRB&=~(1<<UDRIE);
     } 
@@ -39,7 +39,7 @@ class Serial : public SerialBase
       initUSART(baudrate);
       startUSART();
     }
-    inline void doUDRISR()
+    void doUDRISR()
     {
       if(_transmitter.getReadBuffLength()>0)
       {
@@ -52,14 +52,14 @@ class Serial : public SerialBase
         stopTransmission();
       }
     }
-    inline void doRXISR(const uint8_t& data)
+    void doRXISR(const uint8_t& data)
     {
       if(_reciever.getWriteBuffLength()>0)
       {
         _reciever.writeByte(data);
       }
     }
-    inline void doTXISR()
+    void doTXISR()
     {
     }
 };
