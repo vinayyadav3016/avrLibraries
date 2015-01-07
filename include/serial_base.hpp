@@ -27,7 +27,7 @@ class SerialBase
     //inline void stopTransmission() const {};
     ///////////////////////////////////////////////////////////
     /// this is made to enable start transmission
-    virtual inline void startTransmission() const{};
+    //virtual inline void startTransmission() const{};
     ///////////////////////////////////////////////////////////
     /// sender and reciever functions 
     uint8_t sendChunk(const uint8_t* data,const uint8_t length)
@@ -38,7 +38,7 @@ class SerialBase
       {
         _transmitter.writeByte(data[i]);
       }
-      startTransmission();
+      //startTransmission();
       return len;
     }
     uint8_t readChunk(uint8_t* data,const uint8_t length)

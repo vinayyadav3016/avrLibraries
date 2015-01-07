@@ -27,11 +27,13 @@ int main()
   //cli();
   //sei();
   //PORTB=~PORTB;
-  //const char* prompt="Arduino:";
+  const char* prompt="Arduino:";
   while(1)
   {
     //_delay_ms(100);
     serial_port.sendString(PROMPT);
+    serial_port.sendln();
+    serial_port.startTransmission();
     //PORTB=~PORTB;
   }
   return 0;

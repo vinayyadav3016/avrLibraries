@@ -9,7 +9,7 @@ BUILD = "Release"
 MCU = atmega8
 
 ## F_CPU
-F_CPU = 16000000
+F_CPU = 16000000UL
 
 ## Output hex and elf
 TARGET = main
@@ -37,26 +37,28 @@ FORMAT = ihex
 #mkdir -p bin
 
 ## CFLAGS
-CFLAG = -0s 
+CFLAGS = -Os
 #CFLAG +=-save-temps -g -gdwarf-3 -gstrict-dwarf # enable this if debug symbols are needed
 
 ## compiler options
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -ffunction-sections
 CFLAGS += -Wall -Wstrict-prototypes -pedantic
 #CFLAGS += -Werror -pedantic-errors ## uncomment if want to remove all errors
-CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 ## inline functions
 CFLAGS += -finline-limit=3 
 CFLAGS += -fno-tree-scev-cprop -fwhole-program -fno-tree-scev-cprop
-CFLAGS += -ffunction-sections -fdata-sections
+CFLAGS += -ffunction-sections -fdata-sections -fno-exceptions
+CFLAGS += -D__PROG_TYPES_COMPAT__
+CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 ## library options
-PRINTF_LIB = -Wl,-u,vfprintf -lprintf_min -lprintf_flt
-SCANF_LIB = -Wl,-u,vfscanf -lscanf_min -lscanf_flt
+#PRINTF_LIB = -Wl,-u,vfprintf -lprintf_min -lprintf_flt
+#SCANF_LIB = -Wl,-u,vfscanf -lscanf_min -lscanf_flt
 MATH_LIB = -lm
 
 ## Linker options
 LDFLAGS = -Wl,-Map=build/$(TARGET).map,--cref
+#LDFLAGS += -Wl, --gc-sections
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB) $(EXTERNAL_LIB)
 
@@ -105,7 +107,7 @@ GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
 
 # Combine all necessary flags and optional flags.                                                                
 # Add target processor to flags.                                                                                 
-ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS)                                                           
+ALL_CFLAGS = -mmcu=$(MCU)  $(CFLAGS) -I. $(GENDEPFLAGS) -Wl,--gc-sections
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)                                                  
 
 
@@ -117,8 +119,8 @@ build: begin elf hex eep lss sym end
 elf: bin/elf/$(TARGET).elf                                                                                            
 hex: bin/hex/$(TARGET).hex                                                                                            
 eep: bin/eep/$(TARGET).eep                                                                                            
-lss: build/$(TARGET).lss                                                                                            
-sym: build/$(TARGET).sym  
+#lss: build/$(TARGET).lss                                                                                            
+#sym: build/$(TARGET).sym  
 
 
 ## begin
@@ -241,7 +243,7 @@ build/%.s : src/%.cpp
 build/%.o : %.S                                                                                                     
 	@echo =========================================================
 	@echo $(MSG_ASSEMBLING) $<                                                                                  
-	#$(CC) -c $(ALL_ASFLAGS) $< -o $@                                                                           
+	$(CC) -c $(ALL_ASFLAGS) $< -o $@                                                                           
 
 # Create preprocessed source for use in sending a bug report.                                                 
 build/%.i : src/%.cpp                                                                                                     

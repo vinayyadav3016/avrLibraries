@@ -25,10 +25,6 @@ class Serial0 : public SerialBase
     {
       UCSR0B|=(1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0)|(1<<TXCIE0)|(1<<UDRIE0);
     }
-    inline void startTransmission() const
-    {
-      UCSR0B|=(1<<UDRIE0);
-    }
     inline void stopTransmission()
     {
       UCSR0B&=~(1<<UDRIE0);
@@ -38,6 +34,10 @@ class Serial0 : public SerialBase
     {
       initUSART(baudrate);
       startUSART();
+    }
+    inline void startTransmission() const
+    {
+      UCSR0B|=(1<<UDRIE0);
     }
     inline void doUDRISR()
     {

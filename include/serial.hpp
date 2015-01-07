@@ -25,10 +25,6 @@ class Serial : public SerialBase
     {
       UCSRB|=(1<<RXEN)|(1<<TXEN)|(1<<RXCIE)|(1<<TXCIE);
     }
-    inline void startTransmission() const __attribute__((always_inline))
-    {
-      UCSRB|=(1<<UDRIE);
-    }
     inline void stopTransmission() __attribute__((always_inline))
     {
       UCSRB&=~(1<<UDRIE);
@@ -38,6 +34,10 @@ class Serial : public SerialBase
     {
       initUSART(baudrate);
       startUSART();
+    }
+    inline void startTransmission() const __attribute__((always_inline))
+    {
+      UCSRB|=(1<<UDRIE);
     }
     void doUDRISR()
     {
