@@ -1,7 +1,9 @@
 #define F_CPU 16000000UL
 #include "uart_lib.hpp"
-#include <avr/delay.h>
-#include <util/delay.h>
+#include <avr/io.h>
+//#include <avr/interrupt.h>
+//#include <avr/delay.h>
+//#include <util/delay.h>
 
 ////////////////////////////////////////
 /////  UART defination start         ///
@@ -20,17 +22,17 @@
 #define PROMPT "Arduino:"
 int main()
 {
-  DDRB=0xff;
-  PORTB=0xff;
-  cli();
-  sei();
-  PORTB=~PORTB;
+  //DDRB=0xff;
+  //PORTB=0xff;
+  //cli();
+  //sei();
+  //PORTB=~PORTB;
   //const char* prompt="Arduino:";
   while(1)
   {
-    _delay_ms(100);
-     serial_port.sendString(PROMPT);
-     PORTB=~PORTB;
+    //_delay_ms(100);
+    serial_port.sendString(PROMPT);
+    //PORTB=~PORTB;
   }
   return 0;
 }
