@@ -1,6 +1,6 @@
 ## Hi this is my MakeFile.avr
 
-PROJ = avr-test2
+PROJ = avrLibraries
 
 ## buid type
 BUILD = "Release" 
