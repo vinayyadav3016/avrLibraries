@@ -107,7 +107,7 @@ GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
 
 # Combine all necessary flags and optional flags.                                                                
 # Add target processor to flags.                                                                                 
-ALL_CFLAGS = -mmcu=$(MCU)  $(CFLAGS) -I. $(GENDEPFLAGS) -Wl,--gc-sections
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -Wl,--gc-sections
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)                                                  
 
 
