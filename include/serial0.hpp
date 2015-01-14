@@ -29,6 +29,14 @@ class Serial0 : public SerialBase
     {
       UCSR0B&=~(1<<UDRIE0);
     }
+    void stopUSART()
+    {
+      stopTransmission();
+      UBRR0H=0x00;
+      UBRR0L=0x00;
+      UCSR0B=0x00;
+      UCSR0C=0x00;
+    }
   public:
     Serial0(int baudrate,uint8_t rec_size,uint8_t trans_size):SerialBase(rec_size,trans_size)
     {
@@ -65,38 +73,50 @@ class Serial0 : public SerialBase
     }
 };
 
-Serial0 SERIAL_NAME(BAUD_RATE,RX_BUFF,TX_BUFF);
+Serial0* SERIAL_NAME;//(BAUD_RATE,RX_BUFF,TX_BUFF);
+
+Serial0* getSerialPort0(uint16_t baud_rate,uint16_t rx_buff,uint16_t tx_buff)
+{
+  if(SERIAL_NAME==NULL)
+    SERIAL_NAME = new Serial0(baud_rate,rx_buff,tx_buff);
+  return SERIAL_NAME;
+}
+
+void destroySerialPort0()
+{
+  delete SERIAL_NAME;
+}
 
 ISR(USART_UDRE_vect)
 {
-  SERIAL_NAME.doUDRISR();
+  SERIAL_NAME->doUDRISR();
 }
 
 ISR(USART_RX_vect)
 {
   const uint8_t data = UDR0;
-  SERIAL_NAME.doRXISR(data);
+  SERIAL_NAME->doRXISR(data);
 }
 
 ISR(USART_TX_vect)
 {
-  SERIAL_NAME.doTXISR();
+  SERIAL_NAME->doTXISR();
 }
 
 ISR(USART0_UDRE_vect)
 {
-  SERIAL_NAME.doUDRISR();
+  SERIAL_NAME->doUDRISR();
 }
 
 ISR(USART0_RX_vect)
 {
   const uint8_t data = UDR0;
-  SERIAL_NAME.doRXISR(data);
+  SERIAL_NAME->doRXISR(data);
 }
 
 ISR(USART0_TX_vect)
 {
-  SERIAL_NAME.doTXISR();
+  SERIAL_NAME->doTXISR();
 }
 
 #endif

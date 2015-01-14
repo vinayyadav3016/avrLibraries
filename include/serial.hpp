@@ -28,7 +28,16 @@ class Serial : public SerialBase
     inline void stopTransmission() __attribute__((always_inline))
     {
       UCSRB&=~(1<<UDRIE);
-    } 
+    }
+    void stopUSART()
+    {
+      stopTransmission();
+      UBRRH=0x00;
+      UBRRL=0x00;
+      UCSRB=0x00;
+      UCSRC=0x00;
+    }
+
   public:
     Serial(int baudrate,uint8_t rec_size,uint8_t trans_size):SerialBase(rec_size,trans_size)
     {
@@ -64,22 +73,34 @@ class Serial : public SerialBase
     }
 };
 
-Serial SERIAL_NAME(BAUD_RATE,RX_BUFF,TX_BUFF);
+Serial* SERIAL_NAME;//(BAUD_RATE,RX_BUFF,TX_BUFF);
+
+Serial* getSerialPort(uint16_t baud_rate,uint16_t rx_buff,uint16_t tx_buff)
+{
+  if(SERIAL_NAME==NULL)
+    SERIAL_NAME = new Serial(baud_rate,rx_buff,tx_buff);
+  return SERIAL_NAME;
+}
+
+void destroySerialPort()
+{
+  delete SERIAL_NAME;
+}
 
 ISR(USART_UDRE_vect)
 {
-  SERIAL_NAME.doUDRISR();
+  SERIAL_NAME->doUDRISR();
 }
 
 ISR(USART_RXC_vect)
 {
   const uint8_t data = UDR;
-  SERIAL_NAME.doRXISR(data);
+  SERIAL_NAME->doRXISR(data);
 }
 
 ISR(USART_TXC_vect)
 {
-  SERIAL_NAME.doTXISR();
+  SERIAL_NAME->doTXISR();
 }
 
 #endif

@@ -22,12 +22,15 @@ class SerialBase
     }
     ///////////////////////////////////////////////////////////
     /// you must define these function in your class
-    //inline void initUSART(const int baudrate) const{};
-    //inline void startUSART() const{};
-    //inline void stopTransmission() const {};
+    inline void initUSART(const int baudrate) const{};
+    inline void startUSART() const{};
+    inline void stopTransmission() const {};
     ///////////////////////////////////////////////////////////
     /// this is made to enable start transmission
-    //virtual inline void startTransmission() const{};
+    virtual void startTransmission() const{};
+    ///////////////////////////////////////////////////////////
+    // This is to destroy the UART module
+    virtual void stopUSART(){};
     ///////////////////////////////////////////////////////////
     /// sender and reciever functions 
     uint8_t sendChunk(const uint8_t* data,const uint8_t length)
@@ -38,7 +41,7 @@ class SerialBase
       {
         _transmitter.writeByte(data[i]);
       }
-      //startTransmission();
+      startTransmission();
       return len;
     }
     uint8_t readChunk(uint8_t* data,const uint8_t length)
@@ -52,6 +55,10 @@ class SerialBase
       return len;
     }
   public:
+    virtual ~SerialBase()
+    {
+      stopUSART();
+    }
     ///////////////////////////////////////////////////////////
     //// Recieving Functions
     inline uint8_t readByte(uint8_t& data) __attribute__((always_inline))

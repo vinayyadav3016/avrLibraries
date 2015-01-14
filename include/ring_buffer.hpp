@@ -22,7 +22,8 @@ class RingBuffer
     RingBuffer(const uint8_t size):_size(size)
     {
       _buffer = new uint8_t[_size];
-      _insert=_pop=0;
+      _insert=0;
+      _pop=size-1;
     }
     virtual ~RingBuffer()
     {
@@ -42,7 +43,6 @@ class RingBuffer
     }
     inline void readByte(uint8_t& data) __attribute__((always_inline))
     {
-      data = _buffer[_pop];
       _pop++;
       if(_pop<_size)
       {
@@ -52,14 +52,15 @@ class RingBuffer
       {
         _pop = (_pop)%_size;
       }
+      data = _buffer[_pop];
     }
     inline uint8_t getWriteBuffLength() __attribute__((always_inline))
     {
-      return (_size - _insert + _pop-1);
+      return (_size - _insert + _pop)%(_size);
     }
     inline uint8_t getReadBuffLength() __attribute__((always_inline))
     {
-      return ((int8_t)(_size + _insert - _pop));
+      return (_size + _insert - _pop - 1)%(_size);
     }
 };
 #endif
