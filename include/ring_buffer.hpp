@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
 
 class RingBuffer
 {
@@ -23,7 +24,7 @@ class RingBuffer
     {
       _buffer = new uint8_t[_size];
       _insert=0;
-      _pop=size-1;
+      _pop=0;//size-1;
     }
     virtual ~RingBuffer()
     {
@@ -43,6 +44,7 @@ class RingBuffer
     }
     inline void readByte(uint8_t& data) __attribute__((always_inline))
     {
+      data = _buffer[_pop];
       _pop++;
       if(_pop<_size)
       {
@@ -52,15 +54,43 @@ class RingBuffer
       {
         _pop = (_pop)%_size;
       }
-      data = _buffer[_pop];
+      //data = _buffer[_pop];
     }
     inline uint8_t getWriteBuffLength() __attribute__((always_inline))
     {
-      return (_size - _insert + _pop)%(_size);
+      return (_size - _insert + _pop)%(_size+1);
     }
     inline uint8_t getReadBuffLength() __attribute__((always_inline))
     {
-      return (_size + _insert - _pop - 1)%(_size);
+      return (_size + _insert - _pop)%(_size);
     }
+    int16_t searchByte(const uint8_t& data,const uint8_t start=0) const
+    {
+      uint8_t pop = (_pop+start)%(_size);
+      while(pop!=_insert)
+      {
+        if(_buffer[pop]==data)
+        {
+          return (_size - _pop + pop)%(_size);
+        }
+        pop++;
+        pop=pop%_size;
+      }
+      return -1;
+    }
+    inline void fastForwardRead(const uint8_t& count) __attribute__((always_inline))
+    {
+      _pop = (_pop+count)%_size;
+    }
+    inline uint8_t peek(uint8_t& count, const uint8_t start=0) __attribute__((always_inline))
+    {
+      if(start<getReadBuffLength())
+      {
+        count = _buffer[(_pop+start)%_size];
+        return 1;
+      }
+      return NO_DATA_TO_READ;
+    }
+    
 };
 #endif

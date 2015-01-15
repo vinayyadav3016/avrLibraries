@@ -69,6 +69,21 @@ class SerialBase
     {
       return readChunk(data,length);
     }
+    uint8_t readFrame(uint8_t* data, const uint8_t length,const uint8_t& start='0',const uint8_t& end='\n')
+    {
+      int16_t count = _reciever.searchByte('0');
+      if(count!=-1)
+      {
+        int16_t count1 = _reciever.searchByte('\n',count);
+        if(count1!=-1)
+        {
+          _reciever.fastForwardRead(count+1);
+          uint8_t buff = readChunk(data,count1-count+1);
+          return buff==0?buff:buff-1; 
+        }
+      }
+      return 0;
+    }
     ///////////////////////////////////////////////////////////
     //// Transmission Functions
     inline uint8_t sendln() __attribute__((always_inline))
