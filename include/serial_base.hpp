@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 class SerialBase
 {
   protected:
@@ -86,32 +86,43 @@ class SerialBase
     }
     ///////////////////////////////////////////////////////////
     //// Transmission Functions
-    inline uint8_t sendln() __attribute__((always_inline))
+    inline uint8_t send() __attribute__((always_inline))
     {
-      return sendString("\r\n");
+      return send("\r\n");
     }
-    inline uint8_t sendByte(const uint8_t& data) __attribute__((always_inline))
+    inline uint8_t send(const uint8_t& data) __attribute__((always_inline))
     {
       return sendChunk(&data,1);
     }
-    inline uint8_t sendBuffer(const uint8_t* data,const uint8_t length) __attribute__((always_inline))
+    inline uint8_t send(const uint8_t* data,const uint8_t length) __attribute__((always_inline))
     {
       return sendChunk(data,length);
     }
-    inline uint8_t sendString(const char* data) __attribute__((always_inline))
+    inline uint8_t send(const char* data) __attribute__((always_inline))
     {
       return sendChunk(reinterpret_cast<const uint8_t * >(data),strlen(data));
     }
-    uint8_t sendInt(const int& data)
+    uint8_t send(const int& data)
     {
       char str[10];
       uint8_t length = sprintf(str,"%d",data);
       return sendChunk(reinterpret_cast<const uint8_t *>(str),length);
     }
-    uint8_t sendFloat(const float& data,const uint8_t decimal=2)
+    uint8_t send(const double& data,const uint8_t decimal=2)
     {
       char str[10];
-      uint8_t length = sprintf(str,"%.*f",decimal,data);
+      int d = fabs(data);
+      double frac = fabs(data-d);
+      int frc = (int)(frac*pow(10,decimal));
+      uint8_t length=0;
+      if(data<0)
+      {
+        length = sprintf(str,"-%d.%d",d,frc);
+      }
+      else
+      {
+        length = sprintf(str,"%d.%d",d,frc);
+      }
       return sendChunk(reinterpret_cast<const uint8_t *>(str),length);
     }
     ///////////////////////////////////////////////////////////
