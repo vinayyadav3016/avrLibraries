@@ -58,15 +58,15 @@ class ADXL : public Adc
       {
         case 0:
           _c=1;
-          _x = (data-395.0)/80.0;
+          _x = -(data-395.0)/80.0;
           break;
         case 1:
           _c=2;
-          _y = (data-395.0)/80.0;
+          _y = -(data-395.0)/80.0;
           break;
         case 2:
           _c=0;
-          _z = (data -400.0)/80.0;
+          _z = -(data -400.0)/80.0;
           break;
       }
       ADMUX&=~((1<<MUX1)|(1<<MUX0));
