@@ -3,7 +3,6 @@
 
 #include "ring_buffer.hpp"
 #include <avr/io.h>
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <string.h>

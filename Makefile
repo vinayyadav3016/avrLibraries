@@ -6,7 +6,7 @@ PROJ = avrLibraries
 BUILD = "Release" 
 
 ## Give MCU name
-MCU = atmega32
+MCU = atmega328p
 
 ## F_CPU
 F_CPU = 16000000UL

@@ -1,25 +1,8 @@
 #define F_CPU 16000000UL
 #include "uart_lib.hpp"
 #include <avr/io.h>
-//#include <avr/interrupt.h>
-//#include <avr/delay.h>
-//#include <util/delay.h>
-
-////////////////////////////////////////
-/////  UART defination start         ///
-// type identifier                   ///
-#define SERIAL_NAME serial_port      ///
-#define BAUD_RATE 9600               ///
-#define RX_BUFF 5                    ///
-#define TX_BUFF 5                    ///
-#include "serial.hpp"                ///
-#undef SERIAL_NAME                   ///
-#undef BAUD_RATE                     ///
-#undef RX_BUFF                       ///
-#undef TX_BUFF                       ///
-////// UART defination ends here     ///
-////////////////////////////////////////
-#define PROMPT "Arduino:"
+#include "serial0.hpp"                ///
+#include <util/delay.h>
 int main()
 {
   //DDRB=0xff;
@@ -28,14 +11,23 @@ int main()
   //sei();
   //PORTB=~PORTB;
   const char* prompt="Arduino:";
-  Serial* serial_port = getSerialPort(9600,5,5);
+  Serial0* serial_port = getSerialPort0(9600,64,64);
+  cli();
+  sei();
+  serial_port->send(prompt);
   while(1)
   {
-    //_delay_ms(100);
-    serial_port->sendString(PROMPT);
-    serial_port->sendln();
-    serial_port->startTransmission();
-    //PORTB=~PORTB;
+    _delay_ms(1000);
+    uint8_t data[25];
+    uint8_t len = serial_port->readFrame(data, 25);
+    if(len!=0)
+    {
+        //serial_port->send();
+        serial_port->send("Echo:");
+        serial_port->send(data,len);
+        serial_port->send();
+        serial_port->send(prompt);
+    }
   }
   return 0;
 }
