@@ -41,13 +41,15 @@ CFLAGS = -Os
 #CFLAG +=-save-temps -g -gdwarf-3 -gstrict-dwarf # enable this if debug symbols are needed
 
 ## compiler options
-CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -ffunction-sections
-CFLAGS += -Wall -Wstrict-prototypes -pedantic
+CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+CFLAGS += -Wall -Wstrict-prototypes -pedantic -Wextra
+CFLAGS += -std=gnu++11
 #CFLAGS += -Werror -pedantic-errors ## uncomment if want to remove all errors
 ## inline functions
 CFLAGS += -finline-limit=3 
 CFLAGS += -fno-tree-scev-cprop -fwhole-program -fno-tree-scev-cprop
 CFLAGS += -ffunction-sections -fdata-sections -fno-exceptions
+CFLAGS += -flto
 CFLAGS += -D__PROG_TYPES_COMPAT__
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
@@ -57,8 +59,7 @@ CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 MATH_LIB = -lm
 
 ## Linker options
-LDFLAGS = -Wl,-Map=build/$(TARGET).map,--cref
-#LDFLAGS += -Wl, --gc-sections
+LDFLAGS = -Wl,-Map=build/$(TARGET).map,--cref,--gc-sections
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB) $(EXTERNAL_LIB)
 
@@ -66,7 +67,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB) $(EXTERNAL_LIB)
 ## ============================================ ###
 # Define programs and commands.                                                                                  
 SHELL = sh
-CC = avr-gcc
+CC = avr-g++
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE = avr-size

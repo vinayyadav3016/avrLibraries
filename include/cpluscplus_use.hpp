@@ -1,5 +1,5 @@
-#ifndef CPLUSPLUS_USE_HPP
-#define CPLUSPLUS_USE_HPP
+#ifndef __CPLUSPLUS_USE_HPP__
+#define __CPLUSPLUS_USE_HPP__
 #include <stdlib.h>
 #include <inttypes.h>
 #include <avr/io.h>
@@ -13,24 +13,20 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 ///
-void * operator new(size_t size)
-{
-    return malloc(size);
-}
-
-void operator delete(void * ptr)
-{
-    free(ptr);
+void * operator new(size_t size) {
+	return malloc(size);
 }
 ///
-void * operator new[](size_t size) 
-{ 
-      return malloc(size); 
-} 
-
-void operator delete[](void * ptr) 
-{ 
-      free(ptr); 
+void operator delete(void * ptr) {
+	free(ptr);
+}
+///
+void * operator new[](size_t size) {
+	return malloc(size);
+}
+///
+void operator delete[](void * ptr)  {
+	free(ptr);
 }
 ///
 __extension__ typedef int __guard __attribute__((mode (__DI__)));
@@ -45,4 +41,4 @@ void __cxa_guard_abort (__guard *) {}
 extern "C" void __cxa_pure_virtual(void);
 ///
 void __cxa_pure_virtual(void) {}
-#endif
+#endif//__CPLUSPLUS_USE_HPP__
