@@ -4,12 +4,6 @@
 #define __SERIAL0_HPP__
 
 #include "ring_buffer.hpp"
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "serial_base.hpp"
 
 /*! \class
