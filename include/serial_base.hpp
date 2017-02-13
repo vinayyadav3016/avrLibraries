@@ -3,12 +3,13 @@
 #ifndef __SERIAL_BASE_HPP__
 #define __SERIAL_BASE_HPP__
 
-#include "ring_buffer.hpp"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+
+#include <ring_buffer.hpp>
 
 /*! \class
  */
