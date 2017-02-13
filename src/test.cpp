@@ -1,7 +1,8 @@
 #define F_CPU 16000000UL
-#include "uart_lib.hpp"
+#include <uart_lib.hpp>
 #include <avr/io.h>
-#include "serial0.hpp"				  ///
+#include <serial0.hpp>				  ///
+#include <adxl.hpp>
 #include <util/delay.h>
 int main()
 {
