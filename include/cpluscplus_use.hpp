@@ -2,13 +2,6 @@
 #define __CPLUSPLUS_USE_HPP__
 #include <stdlib.h>
 #include <inttypes.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 ///
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
