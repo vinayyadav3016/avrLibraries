@@ -23,8 +23,8 @@ class RingBuffer {
 		uint8_t _size;
 	public:
 		static enum {
-			NO_DATA_TO_READ=0x00,
-			BUFFER_FULL=0x01
+			NO_DATA_TO_READ = 0x00,
+			BUFFER_FULL     = 0x01
 		} ERRORS;
 		/*!
 		 */
