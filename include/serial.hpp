@@ -3,8 +3,7 @@
 #ifndef __SERIAL_HPP__
 #define __SERIAL_HPP__
 
-#include "ring_buffer.hpp"
-#include "serial_base.hpp"
+#include <serial_base.hpp>
 
 /*! \class
  */
