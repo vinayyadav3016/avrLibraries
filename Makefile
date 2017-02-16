@@ -1,12 +1,12 @@
 ## Hi this is my MakeFile.avr
 
-PROJ = avrLibraries
+PROJ = atmega2560
 
 ## buid type
-BUILD = "Release" 
+BUILD = "Release"
 
 ## Give MCU name
-MCU = atmega328p
+MCU = atmega2560
 
 ## F_CPU
 F_CPU = 16000000UL
@@ -41,15 +41,14 @@ CFLAGS = -Os
 #CFLAG +=-save-temps -g -gdwarf-3 -gstrict-dwarf # enable this if debug symbols are needed
 
 ## compiler options
-CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CFLAGS += -Wall -Wstrict-prototypes -pedantic -Wextra
+CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -ffunction-sections
+CFLAGS += -Wall -Wstrict-prototypes -pedantic
 CFLAGS += -std=gnu++11
 #CFLAGS += -Werror -pedantic-errors ## uncomment if want to remove all errors
 ## inline functions
 CFLAGS += -finline-limit=3 
 CFLAGS += -fno-tree-scev-cprop -fwhole-program -fno-tree-scev-cprop
 CFLAGS += -ffunction-sections -fdata-sections -fno-exceptions
-CFLAGS += -flto
 CFLAGS += -D__PROG_TYPES_COMPAT__
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
@@ -59,15 +58,16 @@ CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 MATH_LIB = -lm
 
 ## Linker options
-LDFLAGS = -Wl,-Map=build/$(TARGET).map,--cref,--gc-sections
+LDFLAGS = -Wl,-Map=build/$(TARGET).map,--cref
+LDFLAGS += -Wl,-gc-sections
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB) $(EXTERNAL_LIB)
 
 
 ## ============================================ ###
-# Define programs and commands.                                                                                  
+# Define programs and commands.
 SHELL = sh
-CC = avr-g++
+CC = avr-gcc
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE = avr-size
@@ -77,8 +77,8 @@ REMOVE = rm -f
 COPY = cp
 WINSHELL = xfce4-terminal
 
-# Define Messages                                                                                                
-# English                                                                                                        
+# Define Messages
+# English
 MSG_ERRORS_NONE = Errors: none
 MSG_BEGIN = -------- begin --------
 MSG_END = --------  end  --------
@@ -95,33 +95,34 @@ MSG_COMPILING = Compiling:
 MSG_ASSEMBLING = Assembling:
 MSG_CLEANING = Cleaning project:
 
-# Define all object files.                                                                                       
-#OBJ = $(SRC:src/%.cpp=build/%.o)                                                                             
+# Define all object files.
+#OBJ = $(SRC:src/%.cpp=build/%.o)
 #OBJ = $(SRC:+/%.cpp=build/%.o)
 OBJ = $(patsubst %.cpp,build/%.o, $(notdir $(SRC)))
 
-# Define all listing files.                                                                                      
-LST = $(SRC:src/%.cpp=build/%.lst)                                                                          
+# Define all listing files.
+LST = $(SRC:src/%.cpp=build/%.lst)
 
-# Compiler flags to generate dependency files.                                                                   
-GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d                                                                           
+# Compiler flags to generate dependency files.
+GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
 
-# Combine all necessary flags and optional flags.                                                                
-# Add target processor to flags.                                                                                 
-ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -Wl,--gc-sections
-ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)                                                  
+# Combine all necessary flags and optional flags.
+# Add target processor to flags.
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS)
+#-Wl,--gc-sections
+ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
-# Default target.                                                                                             
+# Default target.
 all: begin gccversion sizebefore build sizeafter end
 
 build: begin elf hex eep lss sym end
 
-elf: bin/elf/$(TARGET).elf                                                                                            
-hex: bin/hex/$(TARGET).hex                                                                                            
-eep: bin/eep/$(TARGET).eep                                                                                            
-#lss: build/$(TARGET).lss                                                                                            
-#sym: build/$(TARGET).sym  
+elf: bin/elf/$(TARGET).elf
+hex: bin/hex/$(TARGET).hex
+eep: bin/eep/$(TARGET).eep
+#lss: build/$(TARGET).lss
+#sym: build/$(TARGET).sym
 
 
 ## begin
@@ -134,8 +135,8 @@ end:
 	@echo $(MSG_END)
 	@echo =====================================================================================================
 
-# Display size of file.                                                                                       
-HEXSIZE = $(SIZE) --target=$(FORMAT) --mcu=${MCU} bin/hex/$(TARGET).hex                                               
+# Display size of file.
+HEXSIZE = $(SIZE) --target=$(FORMAT) --mcu=${MCU} bin/hex/$(TARGET).hex
 ELFSIZE = $(SIZE) --format=avr --mcu=${MCU} bin/elf/$(TARGET).elf  
 
 sizebefore:
@@ -144,8 +145,8 @@ sizebefore:
 sizeafter:
 	@if test -f bin/elf/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); 2>/dev/null;echo;fi
 
-# Display compiler version information.                                                                       
-gccversion :                                                                                                  
+# Display compiler version information.
+gccversion :
 	@$(CC) --version
 
 
@@ -181,21 +182,21 @@ endif
 
 
 
-# Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.                               
+# Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
 COFFCONVERT=$(OBJCOPY) --debugging \
 --change-section-address .data-0x800000 \
 --change-section-address .bss-0x800000 \
 --change-section-address .noinit-0x800000 \
 --change-section-address .eeprom-0x810000
 
-coff: bin/elf/$(TARGET).elf                                                                                           
+coff: bin/elf/$(TARGET).elf
 	@echo =====================================================
-	@echo $(MSG_COFF) build/$(TARGET).cof                                                                             
-	$(COFFCONVERT) -O coff-avr $< build/$(TARGET).cof                                                                 
+	@echo $(MSG_COFF) build/$(TARGET).cof
+	$(COFFCONVERT) -O coff-avr $< build/$(TARGET).cof
 
-extcoff: bin/elf/$(TARGET).elf                                                                                        
+extcoff: bin/elf/$(TARGET).elf
 	@echo =====================================================
-	@echo $(MSG_EXTENDED_COFF) build/$(TARGET).cof                                                                    
+	@echo $(MSG_EXTENDED_COFF) build/$(TARGET).cof
 	$(COFFCONVERT) -O coff-ext-avr $< build/$(TARGET).cof
 
 # create hex file
@@ -204,50 +205,50 @@ bin/hex/%.hex: bin/elf/%.elf
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
-bin/eep/%.eep: bin/elf/%.elf                                                                                                  
+bin/eep/%.eep: bin/elf/%.elf
 	@echo ======================================================
-	@echo $(MSG_EEPROM) $@                                                                                      
+	@echo $(MSG_EEPROM) $@
 	$(OBJCOPY) -j .eeprom --set-section-flags .eeprom=alloc,load \
 	--change-section-lma .eeprom=0 -O $(FORMAT) $< $@
 
-# Create extended listing file from ELF output file.                                                          
-build/%.lss: bin/elf/%.elf                                                                                                  
+# Create extended listing file from ELF output file.
+build/%.lss: bin/elf/%.elf
 	@echo ========================================================
-	@echo $(MSG_EXTENDED_LISTING) $@                                                                            
-	$(OBJDUMP) -h -S $< > $@                                                                                    
+	@echo $(MSG_EXTENDED_LISTING) $@
+	$(OBJDUMP) -h -S $< > $@
 
-# Create a symbol table from ELF output file.                                                                 
-build/%.sym: bin/elf/%.elf                                                                                                  
+# Create a symbol table from ELF output file.
+build/%.sym: bin/elf/%.elf
 	@echo ========================================================
-	@echo $(MSG_SYMBOL_TABLE) $@                                                                                
-	$(NM) -n $< > $@                                                                                            
+	@echo $(MSG_SYMBOL_TABLE) $@
+	$(NM) -n $< > $@
 
-# Link: create ELF output file from object files.                                                             
-.SECONDARY : bin/elf/$(TARGET).elf                                                                                    
-.PRECIOUS : $(OBJ)                                                                                            
-bin/elf/$(TARGET).elf: $(OBJ)                                                                                                 
+# Link: create ELF output file from object files.
+.SECONDARY : bin/elf/$(TARGET).elf
+.PRECIOUS : $(OBJ)
+bin/elf/$(TARGET).elf: $(OBJ)
 	@echo =========================================================
-	@echo $(MSG_LINKING) $@                                                                                     
-	$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)                                                               
+	@echo $(MSG_LINKING) $@
+	$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)
 
-# Compile: create object files from C source files.                                                           
-build/%.o : src/%.cpp                                                                                                   
+# Compile: create object files from C source files.
+build/%.o : src/%.cpp
 	@echo =========================================================
-	@echo $(MSG_COMPILING) $<                                                                                   
-	$(CC) -c $(ALL_CFLAGS) $< -o $@                                                                             
+	@echo $(MSG_COMPILING) $<
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
 
-# Compile: create assembler files from C source files.                                                        
-build/%.s : src/%.cpp                                                                                                   
-	$(CC) -S $(ALL_CFLAGS) $< -o $@                                                                             
+# Compile: create assembler files from C source files.
+build/%.s : src/%.cpp
+	$(CC) -S $(ALL_CFLAGS) $< -o $@
 
-# Assemble: create object files from assembler source files.                                                  
-build/%.o : %.S                                                                                                     
+# Assemble: create object files from assembler source files.
+build/%.o : %.S
 	@echo =========================================================
-	@echo $(MSG_ASSEMBLING) $<                                                                                  
-	$(CC) -c $(ALL_ASFLAGS) $< -o $@                                                                           
+	@echo $(MSG_ASSEMBLING) $<
+	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
-# Create preprocessed source for use in sending a bug report.                                                 
-build/%.i : src/%.cpp                                                                                                     
+# Create preprocessed source for use in sending a bug report
+build/%.i : src/%.cpp
 	$(CC) -E -mmcu=$(MCU) -I. $(CFLAGS) $< -o $@
 
 ## clean project
